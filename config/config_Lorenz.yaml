@@ -1,0 +1,13 @@
+dataset:
+  name: ODE_Lorenz
+  pair_id: 'all'
+model:
+  name: AR
+  lag: 3
+  poly_degree: 2
+  trend: 'c'
+  seasonal: false
+  POD_modes: 3
+  use_arima: false
+  d: 0
+  q: 0

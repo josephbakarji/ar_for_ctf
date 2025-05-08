@@ -1,0 +1,13 @@
+dataset:
+  name: PDE_KS
+  pair_id: 'all'
+model:
+  name: AR
+  lag: 10 
+  poly_degree: 3
+  trend: 'c'
+  seasonal: false
+  POD_modes: 20
+  use_arima: false
+  d: 0
+  q: 0
