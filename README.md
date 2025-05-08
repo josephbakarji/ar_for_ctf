@@ -1,8 +1,11 @@
-# Autoregressive (AR) Model
+# Polynomial Autoregressive (AR) Model
 
-This directory contains an implementation of *Autoregressive* modeling for [CTF-for-Science](https://github.com/CTF-for-Science).
+This directory contains an implementation of *Polynomial Autoregressive* modeling for [CTF-for-Science](https://github.com/CTF-for-Science).
 
-Autoregressive (AR) models are time series models that predict future values based on past observed values. In an AR model of order p, denoted as AR(p), the current value is expressed as a linear combination of p previous values plus a random error term. The model can be written as:
+## Model Description
+
+### Basic Autoregressive Models
+Standard linear autoregressive (AR) models predict future values based on past observed values. In a linear AR model of order p, denoted as AR(p), the current value is expressed as a linear combination of p previous values plus a random error term:
 
 $$y_t = c + \phi_1 y_{t-1} + \phi_2 y_{t-2} + ... + \phi_p y_{t-p} + \varepsilon_t$$
 
@@ -12,14 +15,26 @@ where:
 - $\phi_1, \phi_2, ..., \phi_p$ are the parameters of the model
 - $\varepsilon_t$ is white noise
 
-When applied to spatial-temporal dynamical systems, AR models can be fitted to each spatial point independently, allowing for the prediction of complex behavior while maintaining computational efficiency.
+### Polynomial Autoregressive Models
+This implementation extends the standard AR model to include polynomial terms. A polynomial AR model incorporates nonlinear relationships by including higher-order terms and cross-products of lagged values:
+
+$$y_t = c + \sum_{i=1}^{p} \phi_i y_{t-i} + \sum_{i=1}^{p}\sum_{j=i}^{p} \phi_{ij} y_{t-i}y_{t-j} + \sum_{i=1}^{p}\sum_{j=i}^{p}\sum_{k=j}^{p} \phi_{ijk} y_{t-i}y_{t-j}y_{t-k} + ... + \varepsilon_t$$
+
+For example, a polynomial AR model of order 2 (lag=2) with polynomial degree 2 would include:
+- Linear terms: $y_{t-1}$, $y_{t-2}$
+- Quadratic terms: $y_{t-1}^2$, $y_{t-2}^2$
+- Cross-terms: $y_{t-1}y_{t-2}$
+
+These cross-terms and higher-order polynomial terms capture complex nonlinear dynamics that simple linear AR models cannot represent. This makes polynomial AR models particularly powerful for modeling complex dynamical systems with nonlinear behavior.
+
+When applied to spatial-temporal dynamical systems, AR models are fitted to each spatial point independently, allowing for the prediction of complex behavior while maintaining computational efficiency.
 
 For higher-dimensional systems, this implementation also supports dimensionality reduction using Proper Orthogonal Decomposition (POD) to reduce computational cost while preserving important dynamics.
 
-This implementation includes support for both AR and ARIMA (Autoregressive Integrated Moving Average) models, with special handling for various prediction scenarios including reconstruction tasks and potentially unstable systems.
+This implementation includes support for both standard AR and ARIMA (Autoregressive Integrated Moving Average) models, with special handling for various prediction scenarios including reconstruction tasks and potentially unstable systems.
 
 ## Files
-- `AR.py`: Contains the `AR` class implementing the autoregressive model logic using [statsmodels](https://www.statsmodels.org/).
+- `AR.py`: Contains the `AR` class implementing the polynomial autoregressive model logic using [statsmodels](https://www.statsmodels.org/).
 - `run.py`: Batch runner script for running the model across multiple sub-datasets in the [CTF-for-Science](https://github.com/CTF-for-Science) framework.
 - `run_opt.py`: Batch runner script for running the model across multiple sub-datasets with hyperparameter tuning.
 - `optimize_parameters.py`: Script for tuning the model hyperparameters.
@@ -36,8 +51,8 @@ dataset:
   pair_id: 'all'        # Which sub-datasets to consider
 model:
   name: AR
-  lag: <lag>                    # Number of past timesteps to consider
-  poly_degree: <poly_degree>    # Degree of polynomial terms
+  lag: <lag>                    # Number of past timesteps to consider (p)
+  poly_degree: <poly_degree>    # Degree of polynomial terms (maximum exponent in the model)
   trend: <trend>                # Trend component ('n', 'c', 't', 'ct')
   seasonal: <seasonal>          # Boolean for seasonal component
   POD_modes: <number_POD_modes> # Number of POD modes for dimensionality reduction
